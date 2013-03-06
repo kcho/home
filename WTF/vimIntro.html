@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<xmp theme="Cosmo" style="display:non;">
+# VIM editor
+================================================================
+## QUICK SUMMARY
+----------------------------------------------------------------
+### takes fare amount of time to learn
+### takes fare amount of time getting use to it
+### but once you learn it, you can edit text files really fast
+-----------------------------------------------------------------
+
+
+
+This is a text editor like TextEdit in OSX or notepad in Windows.
+Though it has huuuuuge amount of extra functions and extra codes that you
+can use.
+
+I don't even know one tenth of all functions in VIM but still find it
+extremely useful to 
+1. edit files
+    + quick and simple functions to find and edit the words that you want
+
+2. edit codes
+    + syntax highlighting
+    + auto-completion
+    + searching through the directory 
+
+3. help image processing
+    + access terminal eg.read outputs of the commands straight into text
+
+
+
+## How to run VIM
+```
+vi
+```
+or
+```
+vi text.txt
+```
+
+## to turn off
+```
+:q!  #forced quit
+:q   #when there is no change in the text
+:wq  #save and quit
+```
+
+Once you type this into your shell, it will show a blank screen with
+few information about vi.
+
+## Before you type anything into VIM
+
+Unlike Microsoft word which you just move around and type, 
+**VIM has three modes.**
+###1. move
+When you execute vi, you will go into the move mode
+**Move with**
+```
+h  #left
+j  #down
+k  #up
+l  #right
+$  #end of the line
+0  #first of the line
+^  #first letter of the line
+gg  #first line of the document
+G  #last line of the document
+w  #move forward by one ward
+b  #move backward by one ward
+Ctrl + D  #half page down
+Ctrl + U  #half page up
+```
+*the movement keys that you use most often is all surrounded in the area where your fingers natually lay!!*
+
+**Change into type mode**
+```
+i  #insert at the current position
+a  #append after the current position
+r  #replace the current position then append from next word
+```
+*try R,A,I too*
+
+
+###2. type
+```
+I love CCNC and neuroscience. Not!
+```
+You can just type anything that you want to. 
+
+**back to move mode**
+```
+ESC
+```
+*I actually want to encourage you to contact me for 'vimrc' files*
+*with extra short cuts. The vimrc file will change this ESC*
+*and many other keys into more natually positioned keys so you can*
+*type and edit faster. eg. ESC becomes 'jj'*
+
+###3. select(aka visual)
+
+**Change into select mode from move mode**
+```
+v  #select by letters
+V  #select by lines
+```
+*After typing v or V you can move around with the same key*
+
+Copy and paste
+```
+y  #copy the selected
+Y  #copy the whole line
+p  #paste after the position
+P  #paste before the position
+```
+
+-----------------------------------------------------------------------
+
+##It's help page is amazing so I recommand using their 'help' by typing
+```
+:help
+```
+##in move mode
+
+------------------------------------------------------------------------
+
+##Advanced use
+**read the content of the current files into the vim**
+```
+:r !ls
+```
+
+**open different text on the split vim window**
+```
+:vs text.txt
+```
+
+#HAVE FUN
+#Kevin
+#2013.03.03
+
+
+
+</xmp>
+<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+</html>
