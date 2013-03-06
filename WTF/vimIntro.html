@@ -7,17 +7,18 @@
 ----------------------------------------------------------------
 ### takes fare amount of time to learn
 ### takes fare amount of time getting use to it
-### but once you learn it, you can edit text files really fast
+### but once you learn it, you can edit text files really FAST
 -----------------------------------------------------------------
 
 
 
 This is a text editor like TextEdit in OSX or notepad in Windows.
-Though it has huuuuuge amount of extra functions and extra codes that you
+With huuuuuge amount of extra functions and extra codes that you
 can use.
 
 I don't even know one tenth of all functions in VIM but still find it
 extremely useful to 
+
 1. edit files
     + quick and simple functions to find and edit the words that you want
 
@@ -29,8 +30,7 @@ extremely useful to
 3. help image processing
     + access terminal eg.read outputs of the commands straight into text
 
-
-
+    <br> <br> <br> <br> <br> 
 ## How to run VIM
 ```
 vi
@@ -54,7 +54,8 @@ few information about vi.
 
 Unlike Microsoft word which you just move around and type, 
 **VIM has three modes.**
-###1. move
+    <br> <br> <br> <br> <br> 
+###1. MOVE MODE
 When you execute vi, you will go into the move mode
 **Move with**
 ```
@@ -83,7 +84,14 @@ r  #replace the current position then append from next word
 *try R,A,I too*
 
 
-###2. type
+**Read output from the shell commands**
+```
+:r !ls     #output of the ls at the location
+:r fslstats IMAGE.nii.gz -R    #output of fslstats of an image
+```
+
+    <br> <br> <br> <br> <br> 
+###2. TYPE MODE
 ```
 I love CCNC and neuroscience. Not!
 ```
@@ -97,8 +105,9 @@ ESC
 *with extra short cuts. The vimrc file will change this ESC*
 *and many other keys into more natually positioned keys so you can*
 *type and edit faster. eg. ESC becomes 'jj'*
+    <br> <br> <br> <br> <br> 
 
-###3. select(aka visual)
+###3. SELECT(AKA VISUAL) MODE
 
 **Change into select mode from move mode**
 ```
@@ -125,18 +134,12 @@ P  #paste before the position
 
 ------------------------------------------------------------------------
 
-##Advanced use
-**read the content of the current files into the vim**
-```
-:r !ls
-```
 
 **open different text on the split vim window**
 ```
 :vs text.txt
 ```
 
-#HAVE FUN
 #Kevin
 #2013.03.03
 
