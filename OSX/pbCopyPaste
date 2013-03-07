@@ -1,0 +1,54 @@
+
+I am constantly running commands in Terminal.app on my MacBook and then copying and pasting the results into email messages or documents. Yes, I'm a tech writer. What I'm wondering is if there's any way to actually copy and past into the Mac system wide copy/paste buffer directly from the command line?
+
+
+ 
+Dave's Answer:
+Now this is the kind of question I really dig. And what's great is that it turns out that yes, there is a very simple pair of utilities in Mac OS X that let you monkey with the copy / paste buffer (it's actually called the "Clipboard", though for some reason in the command line version they refer to it as the "pasteboard", which isn't something I've ever seen before in the Unix/Linux world).
+
+I don't know how this would work with multi-clipboard utilities like iClip since I don't use them, but I imagine that it'd simply affect one buffer while leaving all the others alone. If someone has one of these utilities installed, it'd be 90 seconds to test it out...
+
+Anyway, I started my quest with a very useful command: man -k paste, which revealed the following:
+
+Pod::Simple::DumpAsText(3pm) - -- dump Pod-parsing events as text
+paste(1) - merge corresponding or subsequent lines of files
+pbcopy(1), pbpaste(1) - provide copying and pasting to the pasteboard (the Clipboard) from command line
+pboard(8) - pasteboard server
+text(ntcl), tk_textCopy(ntcl), tk_textCut(ntcl), tk_textPaste(ntcl) - Create and manipulate text widgets
+XStoreBytes(3), XStoreBuffer(3), XFetchBytes(3), XFetchBuffer(3), XRotateBuffers(3) - manipulate cut and paste buffers
+If you want to work on the command line, ignore anything from section 3 of the manual: we're looking for "(1)" here, and that shows the commands we seek: pbcopy and pbpaste.
+
+They turn out to be really easy to work with. Want to push the output of an "ls -l" into the Clipboard? Here's how:
+
+$ ls -l | pbcopy
+There's no output. So how do you know it worked? Let's just open up a TextEdit window and use Edit --> Paste to see what happen:
+
+
+Very cool.
+
+To extract something from the Clipboard and have it output within the world of the command line, use pbpaste. Here's a fun command pipe that counts how many letters are in the paste buffer:
+
+$ pbpaste | wc -c
+252
+Easy, eh? Let's test it...
+
+$ who am i | pbcopy
+$ pbpaste | wc -c
+32
+$ pbpaste
+taylor ttys000 Dec 28 17:24 
+$
+So there you go. Turns out to be quite easy to copy and paste between Mac OS X GUI apps and the command line. Now, what to do with it... Hmmm....
+
+Here's one thing I did: I have a script that automatically resizes images for me, spitting out the appropriate HTML for image inclusion in blog posts (like this one). Until I wrote this article and learned more about pbcopy and pbpaste, I'd just manually copy and paste the resultant HTML code. Instead, here's what I did to tweak my 'while condition; do' loop:
+
+while complicated condition do
+...lots of code...
+done | tee $tempfile
+cat $tempfile | pbcopy
+rm -f $tempfile
+See what's happened here? By using the handy "tee" utility, I still see the output on the screen, but a copy is saved in the tempfile defined by the "tempfile" variable, then sent to the "pbcopy" utility and removed. The result: the output looks exactly the same, but it's auto-copied into the Clipboard. Neat.
+
+
+Read more at http://www.askdavetaylor.com/copy_and_paste_from_the_mac_os_x_command_line.html#b5PCcvaz8cwXce6t.99 
+
