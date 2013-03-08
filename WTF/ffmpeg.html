@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<xmp theme="journal" style="display:non;">
+#convert movies into ipad EASY
+<br>
+**Xcode + Macports** are needed
+```
+sudo port install ffmpeg
+```
+
+
+##How to run them
+###Ipad needs an H264 video up to 1024×728 (or 720p) at 30fps with AAC sound at 160Kbps, 48kHz.
+
+```
+ffmpeg -i video.avi -r 30 -vcodec libx264 -acodec libf@c -threads 0 -ar 48000 -ab 128k -ac 2 -y -crf 21 -vpre default Ipad.mp4
+```
+
+
+<br>
+<br>
+<br>
+<br>
+##To improve or decrease the quality, 
+###you can change the option crf. 18 will give a better result, 25 a less good result.
+###If you increase quality, the encoding time will increase & the file size too.
+
+</xmp>
+<script src="http://strapdownjs.com/v/0.2/strapdown.js">
+</script>
+</html>

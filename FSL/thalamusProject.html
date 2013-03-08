@@ -120,8 +120,10 @@ do
 #Python code for extracting cortical ROIs and thalamus
 ##this method removed the empty voxels within the roi occuring
 ##in the mri_label2vol function (scripted in bash little further below)
-#!/usr/bin/python
+
+```
 '''
+#!/usr/bin/python
 changing values of fillthresh made no change
 changing values of proj frac made very small changes of voxel assignment
 to one or the other subgroup(layer)
@@ -184,9 +186,9 @@ subjects = filter(subjectComp.search,[item for item \
                     --o {subj}/segmentation/with_T1_freesurfer/ROIs/{side}_{cortex}.nii.gz'.format(
                     subj=subject,matchList=matchList,side=side,cortex=cortex))
 ```
-<br><br><br><br>
-<br><br><br><br>
 
+<br><br><br><br>
+<br><br><br><br>
 
 #Thalamus extraction
 ##from freesurfer output
