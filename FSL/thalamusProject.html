@@ -200,7 +200,7 @@ echo fslview ${subj}/freesurfer_T1/mri/rawavg.nii.gz l_LPFC -l Green l_MPFC -l R
         -rl ${subj}/freesurfer_T1/mri/rawavg.mgz\
         -rt nearest ${subj}/freesurfer_T1/mri/aseg.mgz ${subj}/freesurfer_T1/aseg2raw.nii.gz
 
-	#10 이 왼쪽  49가 오른쪽
+	#10 is the left side and 49 is the right
 	fslmaths ${subj}/freesurfer_T1/aseg2raw.nii.gz -uthr 10 -thr 10 ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz
 
 	fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz -div 10 ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz
