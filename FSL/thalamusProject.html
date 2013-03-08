@@ -184,9 +184,43 @@ subjects = filter(subjectComp.search,[item for item \
                     --o {subj}/segmentation/with_T1_freesurfer/ROIs/{side}_{cortex}.nii.gz'.format(
                     subj=subject,matchList=matchList,side=side,cortex=cortex))
 ```
+<br><br><br><br>
+<br><br><br><br>
+
+
+#Thalamus extraction
+##from freesurfer output
+
+```
+    mri_convert\
+        -rl ${subj}/freesurfer_T1/mri/rawavg.mgz\
+        -rt nearest ${subj}/freesurfer_T1/mri/aseg.mgz ${subj}/freesurfer_T1/aseg2raw.nii.gz
+
+	#10 is the left side and 49 is the right
+	fslmaths ${subj}/freesurfer_T1/aseg2raw.nii.gz -uthr 10 -thr 10 ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz
+
+	fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz -div 10 ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz
+
+	fslmaths ${subj}/freesurfer_T1/aseg2raw.nii.gz -uthr 49 -thr 49 ${subj}/segmentation/with_T1_freesurfer/ROIs/r_thalamus.nii.gz
+
+	fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_thalamus.nii.gz -div 49 ${subj}/segmentation/with_T1_freesurfer/ROIs/r_thalamus.nii.gz
+
+```
+
+
+<br><br><br><br>
+<br><br><br><br>
+#Registration of ROIs
+##registration of T1_spaced_ROIs into diffusion space using ${subj}/registration/*mat file
+```
+
+```
+
+
+
 <br><br><br><br><br>
 #Wrong script
-##results in empty voxels in ROIs
+##results in few empty voxels in ROIs
 ##but has useful looping method in bash
 **When you run freesurfer, make sure the T1-image is used though
 diffusion images also gives the output.**
@@ -262,166 +296,6 @@ mri_convert mri/rawavg.mgz mri/rawavg.nii.gz   #converting mgz to nii.gz for vie
 
 echo fslview ${subj}/freesurfer_T1/mri/rawavg.nii.gz l_LPFC -l Green l_MPFC -l Red-Yello l_MTC -l Red l_OFC -l Blue l_LTC -l Yellow l_OCC -l Hot-Pink l_PC -l Copper l_SMC -l Cool    #for viewing output of the cortical ROI + thalamus roi
 ```
-<br><br><br><br>
-<br><br><br><br>
-
-
-#Thalamus extraction
-##from freesurfer output
-
-```
-    mri_convert\
-        -rl ${subj}/freesurfer_T1/mri/rawavg.mgz\
-        -rt nearest ${subj}/freesurfer_T1/mri/aseg.mgz ${subj}/freesurfer_T1/aseg2raw.nii.gz
-
-	#10 is the left side and 49 is the right
-	fslmaths ${subj}/freesurfer_T1/aseg2raw.nii.gz -uthr 10 -thr 10 ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz
-
-	fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz -div 10 ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz
-
-	fslmaths ${subj}/freesurfer_T1/aseg2raw.nii.gz -uthr 49 -thr 49 ${subj}/segmentation/with_T1_freesurfer/ROIs/r_thalamus.nii.gz
-
-	fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_thalamus.nii.gz -div 49 ${subj}/segmentation/with_T1_freesurfer/ROIs/r_thalamus.nii.gz
-
-```
-
-
-<br><br><br><br>
-<br><br><br><br>
-#Registration of ROIs
-##registration of T1_spaced_ROIs into diffusion space using ${subj}/registration/*mat file
-```
-mkdir ${subj}/segmentation/with_T1_freesurfer/reg_ROI
-
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_LPFC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/l_LPFC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/l_LPFC.nii.gz 
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_LTC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/l_LTC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/l_LTC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_MPFC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/l_MPFC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/l_MPFC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_MTC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/l_MTC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/l_MTC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_OCC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/l_OCC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/l_OCC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_OFC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/l_OFC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/l_OFC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_PC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/l_PC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/l_PC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_SMC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/l_SMC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/l_SMC.nii.gz
-
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_LPFC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/r_LPFC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/r_LPFC.nii.gz 
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_LTC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/r_LTC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/r_LTC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_MPFC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/r_MPFC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/r_MPFC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_MTC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/r_MTC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/r_MTC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_OCC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/r_OCC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/r_OCC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_OFC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/r_OFC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/r_OFC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_PC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/r_PC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/r_PC.nii.gz
-#fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_SMC.nii.gz -div ${subj}/segmentation/with_T1_freesurfer/ROIs/r_SMC.nii.gz ${subj}/segmentation/with_T1_freesurfer/ROIs/r_SMC.nii.gz
-
-
-
-done
-
-```
-
-```
-#!/usr/bin/python
-'''
-changing values of fillthresh made no change
-changing values of proj frac made very small changes of voxel assignment
-to one or the other subgroup(layer)
-'''
-
-import os
-import re
-
-
-subjectComp = re.compile('.*(NOR|EMO|CHR).*')
-subjects = filter(subjectComp.search,[item for item \
-        in os.listdir(os.getcwd()) if os.path.isdir(item)==True])
-
-os.environ["FREESURFER_HOME"] = '/projects/schiz/software/freesurfer-v4.5/freesurfer'
-#
-#subjects =['CHR02_PJH','CHR01_JHJ']
-for subject in subjects:
-    os.environ["SUBJECTS_DIR"] = '{0}'.format(subject)
-    #to extract thalamus
-    for side in ['lh','rh']:
-
-        if side == 'lh':
-            os.system('mri_binarize --i {0}/freesurfer_T1/mri/aseg.mgz \
-                    --match 10 \
-                    --o {0}/segmentation/with_T1_freesurfer/ROIs/{1}_thalamus.nii'.format(subject,side))
-        else:
-            os.system('mri_binarize --i {0}/freesurfer_T1/mri/aseg.mgz \
-                    --match 49 \
-                    --o {0}/segmentation/with_T1_freesurfer/ROIs/{1}_thalamus.nii'.format(subject,side))
-
-    #Frontal lobe
-    #medial prefrontal cortex
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 1019 1014 1012 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/lh_OFC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 2019 2014 2012 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/rh_OFC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 1002 1026 1028 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/lh_MPFC.nii.gz'.format(subject))
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 2002 2026 2028 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/rh_MPFC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 1020 1027 1032 1018 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/lh_LPFC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 2020 2027 2032 2018 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/rh_LPFC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 1024 1003 1022 1017 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/lh_SMC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 2024 2003 2022 2017 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/rh_SMC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 1008 1031 1025 1023 1010 1029 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/lh_PC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 2008 2031 2025 2023 2010 2029 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/rh_PC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 1006 1016 1007 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/lh_MTC.nii.gz'.format(subject))
-
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 2006 2016 2007 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/rh_MTC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 1034 1030 1001 1009 1015 1033\
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/lh_LTC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 2034 2030 2001 2009 2015 2033\
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/rh_LTC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 1021 1013 1011 1005 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/lh_OCC.nii.gz'.format(subject))
-
-    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aparc+aseg.mgz\
-        --match 2021 2013 2011 2005 \
-        --o {0}/segmentation/with_T1_freesurfer/ROIs/rh_OCC.nii.gz'.format(subject))
-
-
-
-
-
-
-
 
 </xmp>
 <script src="http://strapdownjs.com/v/0.2/strapdown.js">
