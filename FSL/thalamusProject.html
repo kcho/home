@@ -114,12 +114,86 @@ do
 
 ```
 
+<br><br><br><br><br><br><br><br>
+#Python code for extracting cortical ROIs and thalamus
+## this method removed the empty voxels within the roi occuring
+## in the mri_label2vol function (scripted in bash little further below)
+```
+#!/usr/bin/python
+'''
+changing values of fillthresh made no change
+changing values of proj frac made very small changes of voxel assignment
+to one or the other subgroup(layer)
+'''
+
+import os
+import re
+
+subjectComp = re.compile('.*(NOR|EMO|CHR).*')
+subjects = filter(subjectComp.search,[item for item \
+        in os.listdir(os.getcwd()) if os.path.isdir(item)==True])
+
+#setting environment
+os.environ["FREESURFER_HOME"] = '/projects/schiz/software/freesurfer-v4.5/freesurfer'
+ 
+#subjects =['CHR02_PJH','CHR01_JHJ']
+for subject in subjects:
+    os.environ["SUBJECTS_DIR"] = '{0}'.format(subject)
+
+    #to extract thalamus for left and right in loop
+    for side in ['lh','rh']:
+
+        if side == 'lh':
+            os.system('mri_binarize --i {0}/freesurfer_T1/mri/aseg.mgz \
+                    --match 10 \
+                    --o {0}/segmentation/with_T1_freesurfer/ROIs/{1}_thalamus.nii'.format(subject,side))
+        else:
+            os.system('mri_binarize --i {0}/freesurfer_T1/mri/aseg.mgz \
+                    --match 49 \
+                    --o {0}/segmentation/with_T1_freesurfer/ROIs/{1}_thalamus.nii'.format(subject,side))
+
+    #Frontal lobe
+    for cortex in "OFC","MPFC","LPFC","SMC","PC","MTC","LTC","OCC":
+        for side in 'left','right':
+            if side=='left':
+                firstNum='1'
+                sside='lh'
+            else:
+                firstNum='2'
+                sside='rh'
+
+            if cortex=="OFC":
+                match='019 014 012'
+            elif cortex=="MPFC":
+                match='002 026 028'
+            elif cortex=="LPFC":
+                match='020 027 032 018'
+            elif cortex=="SMC":
+                match='024 003 022 017'
+            elif cortex=="PC":
+                match='008 031 025 023 010 029'
+            elif cortex=="MTC":
+                match='006 016 007'
+            elif cortex=="LTC":
+                match='034 030 001 009 015 033'
+            elif cortex=="OCC":
+                match='021 013 011 005' 
+
+            matchList=' '.join([firstNum+item for item in match.split(' ')])
+
+            os.system('mri_binarize --i {subj}/freesurfer_T1/mri/aparc+aseg.mgz\
+                --match {matchList} \
+                --o {subj}/segmentation/with_T1_freesurfer/ROIs/{side}_{cortex}.nii.gz'.format(
+                subj=subject,matchList=matchList,side=side,cortex=cortex))
+```
 <br><br>
 <br><br>
-#Cortical roi extraction from freesurfer output
-##using T1_freesurfer result
-**When you run freesurfer, make sure the T1-image is used though
-diffusion images also gives the output.**
+# Wrong sample here !!
+## Gave empty voxels !!
+##Cortical roi extraction from freesurfer output
+###using T1_freesurfer result
+###**When you run freesurfer, make sure the T1-image is used though
+###diffusion images also gives the output.**
 ```
 	mkdir ${subj}/segmentation/
 	mkdir ${subj}/segmentation/with_T1_freesurfer/
@@ -246,6 +320,7 @@ mkdir ${subj}/segmentation/with_T1_freesurfer/reg_ROI
 done
 
 ```
+
 
 </xmp>
 <script src="http://strapdownjs.com/v/0.2/strapdown.js">
