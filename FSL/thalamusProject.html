@@ -213,7 +213,7 @@ subjects = filter(subjectComp.search,[item for item \
 #Registration of ROIs
 ##registration of T1_spaced_ROIs into diffusion space using ${subj}/registration/*mat file
 ```
-
+hohoho
 ```
 
 
@@ -289,12 +289,11 @@ diffusion images also gives the output.**
             echo
         done
     done
-```
 
-```
-mri_convert mri/rawavg.mgz mri/rawavg.nii.gz   #converting mgz to nii.gz for viewing in fsl
 
-echo fslview ${subj}/freesurfer_T1/mri/rawavg.nii.gz l_LPFC -l Green l_MPFC -l Red-Yello l_MTC -l Red l_OFC -l Blue l_LTC -l Yellow l_OCC -l Hot-Pink l_PC -l Copper l_SMC -l Cool    #for viewing output of the cortical ROI + thalamus roi
+        mri_convert mri/rawavg.mgz mri/rawavg.nii.gz   #converting mgz to nii.gz for viewing in fsl
+
+        echo fslview ${subj}/freesurfer_T1/mri/rawavg.nii.gz l_LPFC -l Green l_MPFC -l Red-Yello l_MTC -l Red l_OFC -l Blue l_LTC -l Yellow l_OCC -l Hot-Pink l_PC -l Copper l_SMC -l Cool    #for viewing output of the cortical ROI + thalamus roi
 ```
 
 </xmp>
