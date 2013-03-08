@@ -1,0 +1,77 @@
+cortices=( OFC MPFC LPFC LTC MTC LTC OCC PC )
+
+#for cortex in OFC MPFC LPFC LTC MTC LTC OCC PC 
+for cortex in ${cortices[@]}
+do
+    if [ "$cortex" == "OFC" ]
+    then
+        echo $cortex
+    elif [ "$cortex" != "OFC" ]
+    then
+        echo 'hoho'
+    fi
+done
+
+
+names=( Jennifer Tonya Anna Sadie )
+
+for name in ${names[@]} 
+do
+echo $name
+# other stuff on $name
+done
+
+
+    #declaring loop strings
+    cortices=( OFC MPFC LPFC LTC MTC LTC OCC PC )
+    for cortex in ${cortices[@]}
+    do
+        if [ "$cortex" = "OFC" ]
+        then
+            extra=( parsorbitalis medialorbitofrontal lateralorbitofrontal )
+        elif [ "$cortex" = "MPFC" ]
+        then
+            extra=( caudalanteriorcingulate rostralanteriorcingulate superiorfrontal )
+        elif [ "$cortex" = "LPFC" ]
+        then
+            extra=( parstriangularis rostralmiddlefrontal frontalpole parsopercularis )
+        elif [ "$cortex" = "SMC" ]
+        then
+            extra=( precentral caudalmiddlefrontal postcentral paracentral )
+
+        elif [ "$cortex" = "PC" ]
+        then
+            extra=( inferiorparietal supramarginal precuneus posteriorcingulate isthmuscingulate superiorparietal )
+
+        elif [ "$cortex" = "MTC" ]
+        then
+            extra=( entorhinal parahippocampal fusiform )
+
+        elif [ "$cortex" = "LTC" ]
+        then
+            extra=( transversetemporal superiortemporal bankssts inferiortemporal middletemporal temporalpole )
+
+        elif [ "$cortex" = "OCC" ]
+        then
+            extra=( pericalcarine lingual lateraloccipital cuneus )
+        fi
+
+
+        echo $cortex
+        echo ${extra[@]}
+        for side in lh rh
+        do
+            for each in ${extra[@]}
+            do
+                new=`echo "--label ${side}.${each}.label" `
+                newList=`echo "${newList} ${new}" `
+            done
+
+            echo ${side}
+            echo mri_label2vol ${newList} --temp ${subj}/freesurfer_T1/mri/rawavg.mgz --subject freesurfer_T1 --hemi ${side} --o ${subj}/segmentation/with_T1_freesurfer/ROIs/${side}_${cortex}.nii.gz --proj frac 0 1 .1 --fillthresh .3 --reg ${subj}/freesurfer_T1/register.dat
+            newList=( )
+            echo
+            echo
+        done
+    done
+

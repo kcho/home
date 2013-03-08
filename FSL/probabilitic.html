@@ -3,7 +3,8 @@
 <xmp theme="journal" style="display:non;">
 #probabilistic tractography
 ```
-for i in EMO*
+#looping through all folders
+for i in *
 do
     #reset the destination of the output
     rm -rf ${i}/segmentation/with_T1_freesurfer/segmentation/left 
