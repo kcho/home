@@ -11,6 +11,29 @@ ipython notebook
 from IPython.display import Image
 Image(filename="/Users/mav88/Downloads/2013-02-22 21.46.57.jpg")
 ```
+<br>
+<br>
+<br>
+<br>
+#Changing IPython format to html
+## nbconvert from git hub
+[[https://github.com/ipython/nbconvert]]
+
+##Requirements Install
+```
+pip install markdown
+
+curl http://docutils.svn.sourceforge.net/viewvc/docutils/trunk/docutils/?view=tar > docutils.tgz
+pip install -U docutils.tgz
+
+#http://johnmacfarlane.net/pandoc
+    
+pip install pygments
+```
+##To use
+```
+./nbconvert.py -format html {noteFile}
+```
 
 </xmp>
 <script src="http://strapdownjs.com/v/0.2/strapdown.js">
