@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<xmp theme="journal" style="display:non;">
+#probabilistic tractography
+```
+for i in EMO*
+do
+    #foreach g (lh_LPFC.nii.gz lh_LTC.nii.gz lh_MPFC.nii.gz lh_MTC.nii.gz lh_OCC.nii.gz lh_OFC.nii.gz lh_PC.nii.gz lh_SMC.nii.gz lh_thalamus.nii.gz rh_LPFC.nii.gz rh_LTC.nii.gz rh_MPFC.nii.gz rh_MTC.nii.gz rh_OCC.nii.gz rh_OFC.nii.gz rh_PC.nii.gz rh_SMC.nii.gz rh_thalamus.nii.gz)
+
+    rm -rf ${i}/segmentation/with_T1_freesurfer/segmentation/left 
+    mkdir -p ${i}/segmentation/with_T1_freesurfer/segmentation/left
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/lh_LPFC.nii.gz > ${i}/segmentation/with_T1_freesurfer/segmentation/left/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/lh_LTC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/left/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/lh_MPFC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/left/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/lh_MTC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/left/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/lh_OCC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/left/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/lh_OFC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/left/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/lh_PC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/left/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/lh_SMC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/left/targets.txt
+
+    probtrackx --mode=seedmask -x ${i}/segmentation/with_T1_freesurfer/ROIs/lh_thalamus.nii.gz -l -c 0.2 -S 2000 --steplength=0.5 -P 5000 --xfm=${i}/registration/diffusionToFreesurfer --forcedir --opd -s ${i}/DTI.bedpostX/merged -m ${i}/DTI.bedpostX/nodif_brain_mask --dir=${i}/segmentation/with_T1_freesurfer/segmentation/left --targetmasks=${i}/segmentation/with_T1_freesurfer/segmentation/left/targets.txt --os2t
+
+
+
+    rm -rf ${i}/segmentation/with_T1_freesurfer/segmentation/right
+    
+    mkdir -p ${i}/segmentation/with_T1_freesurfer/segmentation/right
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/rh_LPFC.nii.gz > ${i}/segmentation/with_T1_freesurfer/segmentation/right/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/rh_LTC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/right/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/rh_MPFC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/right/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/rh_MTC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/right/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/rh_OCC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/right/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/rh_OFC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/right/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/rh_PC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/right/targets.txt
+echo ${i}/segmentation/with_T1_freesurfer/ROIs/rh_SMC.nii.gz >> ${i}/segmentation/with_T1_freesurfer/segmentation/right/targets.txt
+
+    probtrackx --mode=seedmask -x ${i}/segmentation/with_T1_freesurfer/ROIs/rh_thalamus.nii.gz -l -c 0.2 -S 2000 --steplength=0.5 -P 5000 --xfm=${i}/registration/diffusionToFreesurfer --forcedir --opd -s ${i}/DTI.bedpostX/merged -m ${i}/DTI.bedpostX/nodif_brain_mask --dir=${i}/segmentation/with_T1_freesurfer/segmentation/right --targetmasks=${i}/segmentation/with_T1_freesurfer/segmentation/right/targets.txt --os2t
+
+
+
+done
+```
+
+</xmp>
+<script src="http://strapdownjs.com/v/0.2/strapdown.js">
+</script>
+</html>
