@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<xmp theme="journal" style="display:non;">
+#How to sort data frame
+## using 'order()' fucntion
+<br>
+<br>
+<br>
+```
+# by column names
+prac[with(prac,order(Subject.name)),]
+prac[with(prac,order(-Subject.name)),] #descending order
+
+
+# by column numbers
+prac[order(prac[,1])]
+prac[order(-prac[,1])] #descending order
+
+
+# send option to add
+prac[with(prac,order(Subject.name,group)),]
+```
+
+</xmp>
+<script src="http://strapdownjs.com/v/0.2/strapdown.js">
+</script>
+</html>

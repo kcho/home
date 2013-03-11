@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<xmp theme="journal" style="display:non;">
+#Connectivity map thresholding
+<br>
+<br>
+<br>
+##What is this 'connectivity' value?
+**The value is from**
+
+###* Probabilistic tractography
+
+    Seed : thalamus
+
+    Target : eg)lateral prefrontal cortex
+
+
+
+###* Output is this 'connectivity' value in each voxel which represent 
+
+####the probability of tract arriving in the target 
+
+####if tractography was calculated 5000 times.
+
+####( number of tracts arriving in the target from the seed divided by 5000 )
+
+<br>
+<br>
+<br>
+##Why threshold?
+**There must be a region in the thalamus which shows non-significant connection**
+
+**However, they might result in tracts arriving in the target by chance**
+
+So, I've thresholded the connectivities using various thresholds
+ranging from 10% to 90% of robust range.
+<br>
+```
+fslmaths <imgIn> -thrP <%threshold> <imgOut>
+```
+
+
+</xmp>
+<script src="http://strapdownjs.com/v/0.2/strapdown.js">
+</script>
+</html>
