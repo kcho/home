@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<xmp theme="journal" style="display:non;">
+
+#Thalamus Project Preprocessing
+--------------------------------------------------
+## scripts loop through each subject
+<br>
+### executed where there are subject folders 
+### with 
+### DTI and T1 dicoms
+most of the preprocessing scripts are in bash,
+whereas later it is more in python.
+
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+## Dicoms --> nifti format using dcm2nii
+## rearranged the data into the right name and place
+```
+#!/bin/bash
+for subj in $@  #looping through subjects
+do
+    # dcm2nii into nii files
+    mricron ${subj}/DTI/*
+    mricron ${subj}/T1/*
+
+	for possibleImage in dcm,IMA,hdr    #moving original files
+	do
+	    for img in DTI,T1
+	    do
+	    mkdir ${subj}/${img}/dicom
+	    mv ${subj}/${img}/*${possibleImage} ${subj}/${img}/dicom/
+
+		rm ${subj}/${img}/*SCOUT*    #removing scouts
+
+	    done
+	done
+
+	
+	#DTI-preprocessing1. name change
+	mv ${subj}/DTI/*bval ${subj}/DTI/bvals
+	mv ${subj}/DTI/*bvec ${subj}/DTI/bvecs
+	mv ${subj}/DTI/*.nii.gz ${subj}/DTI/data.nii.gz
+
+```
+<br><br>
+<br><br>
+
+
+# DTI processing  :: FSL start
+## eddycurrent correctioin and diffusion tensor calculation
+```
+	eddy_correct ${subj}/DTI/data.nii.gz\
+	        ${subj}/DTI/data 0  #DTI-preprocessing2. eddy current
+	
+	fslroi ${subj}/DTI/data.nii\
+	        ${subj}/DTI/nodif 0 1    #B0 image extraction
+		
+	bet ${subj}/DTI/nodif\
+	        ${subj}/DTI/nodif_brain_0.30 -m -f 0.30  #Bet brain extraction
+
+	
+	dtifit -k ${subj}/DTI/data\     #FDT_DTIFIT
+            -m ${subj}/DTI/nodif_brain_mask\
+            -r ${subj}/DTI/bvecs\
+            -b ${subj}/DTI/bvals\
+            -o ${subj}/DTI/dti    
+```
+
+<br><br>
+<br><br>
+#T1 processing
+```
+	bet ${subj}/T1/co2*\
+	    ${subj}/T1/co_bias_neck_field_clean_up_0.30\
+	    -B -f 0.30 -g 0 -m  #T1 Bet brain extraction
+```
+
+<br><br>
+<br><br>
+#Registration
+## T1 space to FA space
+```
+	mkdir ${subj}/registration/Bet_T1_to_Bet_diff -p  #Registration between the Bet_T1 --> Bet_Diffusion
+	flirt -in ${subj}/T1/co_bias_neck_field_clean_up_0.30.nii.gz\
+		-ref ${subj}/DTI/dti_FA.nii.gz\
+		-out ${subj}/registration/Bet_T1_to_Bet_diff/Bet_T1_to_Bet_diff_FA\ 
+		-omat ${subj}/registration/Bet_T1_to_Bet_diff/Bet_T1_to_Bet_diff_FA.mat\ 
+		-bins 256\ 
+		-cost mutualinfo\ 
+		-searchrx -90 90\ 
+		-searchry -90 90\ 
+		-searchrz -90 90\ 
+		-dof 6  -interp trilinear
+```
+
+<br><br>
+<br><br>
+#Running Freesurfer 
+## Take it out to parallel processing !
+## from T1_registered_to_diffusion_space
+```
+	mkdir ${subj}/freesurfer_diffusion/mri/orig -p
+    #into mgz format
+	mri_convert ${subj}/registration/Bet_T1_to_Bet_diff/Bet_T1_to_Bet_diff_FA.nii.gz\
+	    ${subj}/freesurfer_diffusion/mri/orig/001.mgz
+
+	echo freesurfer on $subj
+	setenv SUBJECTS_DIR ${PWD} #setting environment
+	recon-all -all -s freesurfer_diffusion   #running recon-all
+
+```
+
+<br><br>
+<br><br>
+#Python code for extracting cortical ROIs and thalamus
+##this method removed the empty voxels within the roi occuring
+##in the mri_label2vol function (scripted in bash little further below)
+
+```
+'''
+#!/usr/bin/python
+changing values of fillthresh made no change
+changing values of proj frac made very small changes of voxel assignment
+to one or the other subgroup(layer)
+'''
+
+import os
+import re
+
+subjectComp = re.compile('.*(NOR|EMO|CHR).*')
+subjects = filter(subjectComp.search,[item for item \
+        in os.listdir(os.getcwd()) if os.path.isdir(item)==True])
+
+        #setting environment
+        os.environ["FREESURFER_HOME"] = '/projects/schiz/software/freesurfer-v4.5/freesurfer'
+
+        #subjects =['CHR02_PJH','CHR01_JHJ']
+        for subject in subjects:
+            os.environ["SUBJECTS_DIR"] = '{0}'.format(subject)
+
+        #to extract thalamus for left and right in loop
+            for side in ['lh','rh']:
+                if side == 'lh':
+                    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aseg.mgz \
+                        --match 10 \
+                        --o {0}/segmentation/with_T1_freesurfer/ROIs/{1}_thalamus.nii'.format(subject,side))
+                else:
+                    os.system('mri_binarize --i {0}/freesurfer_T1/mri/aseg.mgz \
+                        --match 49 \
+                    --o {0}/segmentation/with_T1_freesurfer/ROIs/{1}_thalamus.nii'.format(subject,side))
+        #Frontal lobe
+        for cortex in "OFC","MPFC","LPFC","SMC","PC","MTC","LTC","OCC":
+            for side in 'left','right':
+                if side=='left':
+                    firstNum='1'
+                    sside='lh'
+                else:
+                    firstNum='2'
+                    sside='rh'
+
+                if cortex=="OFC":
+                    match='019 014 012'
+                elif cortex=="MPFC":
+                    match='002 026 028'
+                elif cortex=="LPFC":
+                    match='020 027 032 018'
+                elif cortex=="SMC":
+                    match='024 003 022 017'
+                elif cortex=="PC":
+                    match='008 031 025 023 010 029'
+                elif cortex=="MTC":
+                    match='006 016 007'
+                elif cortex=="LTC":
+                    match='034 030 001 009 015 033'
+                elif cortex=="OCC":
+                    match='021 013 011 005' 
+                matchList=' '.join([firstNum+item for item in match.split(' ')])
+
+                os.system('mri_binarize --i {subj}/freesurfer_T1/mri/aparc+aseg.mgz\
+                    --match {matchList} \
+                    --o {subj}/segmentation/with_T1_freesurfer/ROIs/{side}_{cortex}.nii.gz'.format(
+                    subj=subject,matchList=matchList,side=side,cortex=cortex))
+```
+
+<br><br><br><br>
+<br><br><br><br>
+
+#Thalamus extraction
+##from freesurfer output
+
+```
+    mri_convert\
+        -rl ${subj}/freesurfer_T1/mri/rawavg.mgz\
+        -rt nearest ${subj}/freesurfer_T1/mri/aseg.mgz ${subj}/freesurfer_T1/aseg2raw.nii.gz
+
+	#10 is the left side and 49 is the right
+	fslmaths ${subj}/freesurfer_T1/aseg2raw.nii.gz -uthr 10 -thr 10 ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz
+
+	fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz -div 10 ${subj}/segmentation/with_T1_freesurfer/ROIs/l_thalamus.nii.gz
+
+	fslmaths ${subj}/freesurfer_T1/aseg2raw.nii.gz -uthr 49 -thr 49 ${subj}/segmentation/with_T1_freesurfer/ROIs/r_thalamus.nii.gz
+
+	fslmaths ${subj}/segmentation/with_T1_freesurfer/ROIs/r_thalamus.nii.gz -div 49 ${subj}/segmentation/with_T1_freesurfer/ROIs/r_thalamus.nii.gz
+
+```
+
+
+<br><br><br><br>
+<br><br><br><br>
+#Registration of ROIs
+##registration of T1_spaced_ROIs into diffusion space using ${subj}/registration/*mat file
+```
+hohoho
+```
+
+
+
+<br><br><br><br><br>
+#Wrong script
+##results in few empty voxels in ROIs
+##but has useful looping method in bash
+**When you run freesurfer, make sure the T1-image is used though
+diffusion images also gives the output.**
+```
+	mkdir ${subj}/segmentation/
+	mkdir ${subj}/segmentation/with_T1_freesurfer/
+    mkdir ${subj}/segmentation/with_T1_freesurfer/ROIs
+	setenv SUBJECTS_DIR ${subj}
+
+    #declaring loop strings
+    cortices=( OFC MPFC LPFC LTC MTC LTC OCC PC )
+    #for each cortices, assign appropriate label maps
+    for cortex in ${cortices[@]}
+    do
+        if [ "$cortex" = "OFC" ]
+        then
+            extra=( parsorbitalis medialorbitofrontal lateralorbitofrontal )
+        elif [ "$cortex" = "MPFC" ]
+        then
+            extra=( caudalanteriorcingulate rostralanteriorcingulate superiorfrontal )
+        elif [ "$cortex" = "LPFC" ]
+        then
+            extra=( parstriangularis rostralmiddlefrontal frontalpole parsopercularis )
+        elif [ "$cortex" = "SMC" ]
+        then
+            extra=( precentral caudalmiddlefrontal postcentral paracentral )
+
+        elif [ "$cortex" = "PC" ]
+        then
+            extra=( inferiorparietal supramarginal precuneus posteriorcingulate isthmuscingulate superiorparietal )
+
+        elif [ "$cortex" = "MTC" ]
+        then
+            extra=( entorhinal parahippocampal fusiform )
+
+        elif [ "$cortex" = "LTC" ]
+        then
+            extra=( transversetemporal superiortemporal bankssts inferiortemporal middletemporal temporalpole )
+
+        elif [ "$cortex" = "OCC" ]
+        then
+            extra=( pericalcarine lingual lateraloccipital cuneus )
+        fi
+
+        echo $cortex
+        echo ${extra[@]}
+        # for left and right
+        for side in lh rh
+        do
+
+            #build a label set for each cortex
+            for each in ${extra[@]}
+            do
+                new=`echo "--label ${side}.${each}.label" `
+
+                newList=`echo "${newList} ${new}" ` #append to newList
+            done
+
+            echo ${side}
+
+            # actuall command
+            mri_label2vol ${newList} --temp ${subj}/freesurfer_T1/mri/rawavg.mgz --subject freesurfer_T1 --hemi ${side} --o ${subj}/segmentation/with_T1_freesurfer/ROIs/${side}_${cortex}.nii.gz --proj frac 0 1 .1 --fillthresh .3 --reg ${subj}/freesurfer_T1/register.dat
+
+            newList=( )#reset newList
+            echo
+            echo
+        done
+    done
+
+
+        mri_convert mri/rawavg.mgz mri/rawavg.nii.gz   #converting mgz to nii.gz for viewing in fsl
+
+        echo fslview ${subj}/freesurfer_T1/mri/rawavg.nii.gz l_LPFC -l Green l_MPFC -l Red-Yello l_MTC -l Red l_OFC -l Blue l_LTC -l Yellow l_OCC -l Hot-Pink l_PC -l Copper l_SMC -l Cool    #for viewing output of the cortical ROI + thalamus roi
+```
+
+</xmp>
+<script src="http://strapdownjs.com/v/0.2/strapdown.js">
+</script>
+</html>

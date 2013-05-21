@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<xmp theme="journal" style="display:non;">
+#OSX copy and paste command in terminal
+## useful when copying texts out from terminal to GUI
+```
+    pbcopy #copy
+    pbpaste #paste
+```
+<br>
+<br>
+##For example..in Vi
+```
+:%w !pbcopy  #copies everything to osx clipboard
+
+:r !pbpaste #pastes everything into the vim from osx clipboard
+```
+<br><br>
+##Other examples
+```
+cat tempfile | pbcopy
+```
+
+
+</xmp>
+<script src="http://strapdownjs.com/v/0.2/strapdown.js">
+</script>
+</html>

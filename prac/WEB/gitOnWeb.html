@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<xmp theme="journal" style="display:non;">
+
+#FROM
+#http://wiki.cementhorizon.com/display/CH/How+to+use+git+on+GoDaddy+Shared+Hosting
+--------------------------------------------
+
+#How to activate git on the website
+
+    *As of Nov 2012, godaddy SSH servers are running Centos 5.5 i386.
+
+##Fetch the binaries
+```
+cd ~ 
+mkdir git
+cd git
+```
+---------------------------------------------
+##Download the rpm from EPEL ( http://fedoraproject.org/wiki/EPEL )
+
+```
+wget http://dl.fedoraproject.org/pub/epel/5/i386/git-1.7.4.1-1.el5.i386.rpm
+```
+---------------------------------------------
+
+##Extract binaries from the rpm
+
+```
+rpm2cpio git-1.7.4.1-1.el5.i386.rpm  | cpio -imdv
+rm git-1.7.4.1-1.el5.i386.rpm
+```
+
+---------------------------------------------
+
+##Configure
+```
+echo "export GIT_BIN=\${HOME}/git" >> ~/.bash_profile
+echo "export PATH=\${GIT_BIN}/usr/bin:\${PATH}" >> ~/.bash_profile
+echo "export GIT_EXEC_PATH=\${GIT_BIN}/usr/bin" >> ~/.bash_profile
+echo "export GIT_TEMPLATE_DIR=\${GIT_BIN}/usr/share/git-core/templates" >> ~/.bash_profile
+echo "export GIT_SSL_NO_VERIFY=true" >> ~/.bash_profile
+```
+
+----------------------------------------------
+
+##Configure git
+```
+mkdir ~/.git
+git config --local --add remote.origin.uploadpack ~/git/usr/bin/git-upload-pack
+git config --local --add remote.origin.receivepack ~/git/usr/bin/git-receive-pack
+```
+    
+
+----------------------------------------------
+#Test it out
+```
+mkdir ~/test
+cd ~/test
+git clone https://github.com/github/git-reference.git
+```
+
+Thanks to :
+       * http://writepermission.com/2009/09/install-git-on-a-shared-webhost/
+          * http://www.krizka.net/2010/12/30/setting-up-a-public-git-repository-with-godaddy-shared-hosting/
+
+
+
+
+
+#What you have to do after update!
+##at the computer
+```
+git add *
+git commit -m 'WHATEVER'
+git push
+```
+##at the server
+```
+git pull
+```
+
+
+
+</xmp>
+<script src="http://strapdownjs.com/v/0.2/strapdown.js">
+</script>
+</html>
